@@ -1,0 +1,8 @@
+node_modules
+tmp/test/*
+tmp/upload/*
+.env
+.env.test
+.vscode/
+yarn.lock
+yarn-error.log
