@@ -6,26 +6,17 @@ import fs from 'fs'
 import factory from '../factories'
 
 import truncate from '../util/truncate'
+import ClientTemp from '../../src/app/models/ClientsTemp'
+
 
 describe('Client', () => {
     beforeEach(async () => {
         await truncate()
     })
 
-    it('should be able to registrer a new client', async () => {
-        const user = await factory.create('User')
-        console.log('user', user.id)
+    it('should be able get to all client type by process_id', async () => {
+        const list = await ClientTemp.findAll({ where: { process_id: file.id } })
 
-        const address = await factory.create('Address')
-        console.log('address', address.id)
-
-        const client = await factory.attrs('Client',
-            {
-                user_id: user.id,
-                address_id: address.id,
-                cep: address.cep
-            })
-        console.log(client)
-        expect(client).toHaveProperty('id')
+        expect(list).toHaveLength
     })
 })

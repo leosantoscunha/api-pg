@@ -1,13 +1,14 @@
 class Client {
-    constructor(name, cep, cpf, address_id, user_id, process_id, status, errors = []) {
-        this.process_id = process_id
-        this.name = name
-        this.cep = cep
-        this.cpf = cpf
-        this.address_id = address_id
-        this.user_id = user_id
-        this.status = status
-        this.errors = errors
+    constructor(clientTemp) {
+        this.process_id = clientTemp.process_id
+        this.name = clientTemp.name
+        this.cep = clientTemp.cep
+        this.cpf = clientTemp.cpf
+        this.address_id = clientTemp.address_id
+        this.number = clientTemp.number
+        this.user_id = clientTemp.user_id
+        this.status = clientTemp.status
+        this.errors = clientTemp.errors
     }
 }
 

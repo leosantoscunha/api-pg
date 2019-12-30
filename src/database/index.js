@@ -13,7 +13,6 @@ const models = [User, FileProcess, Client, Address, ClientTemp]
 class Database {
     constructor() {
         this.init()
-        this.mongo()
     }
 
     init() {

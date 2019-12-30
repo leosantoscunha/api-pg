@@ -19,6 +19,6 @@ export default class Client extends Model {
 
     static associate(models) {
         this.belongsTo(models.User, { foreignKey: 'user_id' })
-        this.hasOne(models.Address, { foreignKey: 'address_id' })
+        this.belongsTo(models.Address, { foreignKey: 'address_id' })
     }
 }

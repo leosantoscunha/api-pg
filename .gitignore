@@ -1,6 +1,6 @@
 node_modules
-tmp/test/*
-tmp/upload/*
+tmp/test/**
+tmp/uploads/**
 .env
 .env.test
 .vscode/

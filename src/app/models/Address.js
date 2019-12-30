@@ -6,7 +6,7 @@ export default class Address extends Model {
             {
                 street: Sequelize.STRING,
                 number: Sequelize.STRING,
-                district: Sequelize.STRING,
+                neighborhood: Sequelize.STRING,
                 city: Sequelize.STRING,
                 state: Sequelize.STRING,
                 complement: Sequelize.STRING,

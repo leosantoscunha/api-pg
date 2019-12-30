@@ -17,7 +17,7 @@ module.exports = {
         allowNull: false
       },
       status: {
-        type: Sequelize.ENUM('completed', 'finish', 'error'),
+        type: Sequelize.ENUM('completed', 'processing', 'error'),
         allowNull: false
       },
       user_id: {
@@ -32,6 +32,11 @@ module.exports = {
         type: Sequelize.INTEGER,
         allowNull: true
       },
+      number:
+      {
+        type: Sequelize.STRING,
+        allowNull: true
+      },
       name: {
         type: Sequelize.STRING,
         allowNull: false
@@ -43,6 +48,10 @@ module.exports = {
       cpf: {
         type: Sequelize.STRING,
         allowNull: false
+      },
+      errors: {
+        type: Sequelize.JSON,
+        allowNull: true
       },
       created_at: {
         type: 'TIMESTAMP',

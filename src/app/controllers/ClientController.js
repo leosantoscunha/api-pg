@@ -1,15 +1,17 @@
 import moment from 'moment'
+import _ from 'lodash'
 import helpers from '../../helpers'
 import parse from 'csv-parse'
 import fs from 'fs'
-
-import ProcessData from '../services/ProcessData'
 
 import FileProcess from '../models/FileProcess'
 import ClientDto from '../dtos/Client'
 import ClientTemp from '../models/ClientsTemp'
 
 import User from '../models/User'
+
+import Queue from '../../lib/Queue'
+import HandleWithFileClientProcess from '../jobs/HandleWithFileClientProcess'
 
 class ClientController {
     async upload(req, res, next) {
@@ -27,11 +29,13 @@ class ClientController {
         }
 
         try {
-            const user = await User.findOne({ where: { code: normalizedCode } })
-
-            if (!user) {
-                user = User.create({ name: helpers.titleize(username), code: normalizedCode })
-            }
+            const user = await User
+                .findOrCreate({ where: { code: normalizedCode }, defaults: { name: helpers.titleize(username), code: normalizedCode } })
+                .then(([user, created]) => {
+                    return user.get({
+                        plain: true
+                    })
+                })
 
             const fileObj = {
                 user_id: user.id,
@@ -42,16 +46,32 @@ class ClientController {
             const file = await FileProcess.create(fileObj)
 
             fs.createReadStream(`/home/www/api-pg/tmp/uploads/${filename}`)
-                .pipe(parse({ delimiter: ',' }, (err, data) => {
-                    if (err) {
-                        console.log(`An error was encountered: ${err}`);
-                        return;
-                    }
-                    data.shift();
+                .pipe(parse({
+                    delimiter: ';',
+                    columns: true,
+                    skip_empty_lines: true
+                }, async (err, data, { lines, records }) => {
 
-                    const list = data.map(row => new ClientDto(...row, null, user.id, file.id, 'processing'));
+                    if (err) {
+                        return res.json({ file: err })
+
+                    }
+
+                    const list = data.map(row => {
+                        const obj = _.mapKeys(row, (v, k) => k.toLowerCase())
+
+                        obj.status = 'processing'
+                        obj.user_id = user.id
+                        obj.process_id = file.id
+
+                        return new ClientDto(obj)
+                    });
 
                     ClientTemp.bulkCreate(list)
+
+                    await Queue.add(HandleWithFileClientProcess.key, {
+                        file
+                    })
                 }
                 ))
 

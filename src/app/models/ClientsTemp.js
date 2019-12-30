@@ -7,8 +7,9 @@ export default class ClientsTemp extends Model {
                 name: Sequelize.STRING,
                 cep: Sequelize.STRING,
                 cpf: Sequelize.STRING,
-                status: Sequelize.STRING,
-                type: Sequelize.ENUM('completed', 'new', 'error'),
+                number: Sequelize.STRING,
+                status: Sequelize.ENUM('completed', 'processing', 'error'),
+                errors: Sequelize.JSON
             },
             {
                 tableName: 'clients_temp',
@@ -23,5 +24,6 @@ export default class ClientsTemp extends Model {
     static associate(models) {
         this.belongsTo(models.User, { foreignKey: 'user_id' })
         this.belongsTo(models.FileProcess, { foreignKey: 'process_id' })
+        this.belongsTo(models.Address, { foreignKey: 'address_id' })
     }
 }

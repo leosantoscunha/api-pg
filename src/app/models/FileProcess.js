@@ -9,7 +9,6 @@ export default class FileProcess extends Model {
                 status: Sequelize.ENUM('completed', 'processing'),
             },
             {
-                timestamp: true,
                 sequelize
             }
         )
