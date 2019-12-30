@@ -14,9 +14,4 @@ describe('Client', () => {
         await truncate()
     })
 
-    it('should be able get to all client type by process_id', async () => {
-        const list = await ClientTemp.findAll({ where: { process_id: file.id } })
-
-        expect(list).toHaveLength
-    })
 })
