@@ -1,17 +1,20 @@
-import moment from 'moment'
 import _ from 'lodash'
 import helpers from '../../helpers'
 import parse from 'csv-parse'
 import fs from 'fs'
 
-import FileProcess from '../models/FileProcess'
-import ClientDto from '../dtos/Client'
-import ClientTemp from '../models/ClientsTemp'
-
-import User from '../models/User'
-
+import cep from 'cep-promise'
 import Queue from '../../lib/Queue'
+
 import HandleWithFileClientProcess from '../jobs/HandleWithFileClientProcess'
+
+import FileProcess from '../models/FileProcess'
+import ClientTemp from '../models/ClientsTemp'
+import User from '../models/User'
+import Client from '../models/Client'
+import Address from '../models/Address'
+
+import ClientDto from '../dtos/Client'
 
 class ClientController {
     async upload(req, res, next) {
@@ -74,8 +77,64 @@ class ClientController {
                     })
                 }
                 ))
+            const uploadResponse = {
 
-            return res.json({ file })
+                "user_code": user.code,
+                "name": user.name,
+                "created_at": user.create_at,
+                "file_name": file.file_name,
+                "file_process": file.id,
+                "url_file_process": process.env.API_HOST + 'upload/process/' + file.id,
+                "process_status": file.status
+            }
+
+            return res.json(uploadResponse)
+        } catch (err) {
+            return next()
+        }
+    }
+
+    async update(req, res, next) {
+        try {
+
+            const client = await Client.findByPk(req.body.id)
+
+            if (!client) {
+                return res.json({
+                    status: 'error',
+                    message: 'Client not found'
+                })
+            }
+
+            const address = await Address.findByPk(client.address_id)
+
+            await cep(req.body.cep.replace('-', ''))
+                .then(async data => {
+                    const { id } = await address.update({ ...data, number: req.body.number })
+                    client.address_id = id
+                }).catch(err => {
+                    return res.json({
+                        status: 'error',
+                        message: 'CEP validated Error',
+                        data: err.errors
+                    })
+                })
+
+            const updatedClient = await client.update(req.body).then(response => {
+                return Client.findByPk(response.id,
+                    {
+                        attributes: { exclude: ['user_id', 'UserId', 'address_id'] },
+                        include: [{
+                            model: Address,
+                        }]
+                    })
+            })
+
+            return res.json(res.json({
+                status: 'success',
+                message: 'Client updated successfully',
+                data: updatedClient
+            }))
         } catch (err) {
             return next()
         }

@@ -1,5 +1,4 @@
 import cep from 'cep-promise'
-import User from '../models/User'
 import FileProcess from '../models/FileProcess'
 import ClientsTemp from '../models/ClientsTemp'
 import Client from '../models/Client'
@@ -24,7 +23,6 @@ class HandleWithFileClientProcess {
                     const { id } = await Address.create(data)
                     list[index].address_id = id
                 }).catch(err => {
-                    //TODO: melhorar json de errors
                     list[index].errors = { errors: { address: err.errors } }
                 })
 

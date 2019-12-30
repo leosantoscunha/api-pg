@@ -7,6 +7,8 @@ export default class Client extends Model {
                 name: Sequelize.STRING,
                 cep: Sequelize.STRING,
                 cpf: Sequelize.STRING,
+                created_at: Sequelize.DATE,
+                updated_at: Sequelize.DATE
             },
             {
                 timestamp: true,

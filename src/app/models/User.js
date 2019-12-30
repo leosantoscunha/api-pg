@@ -6,6 +6,8 @@ export default class User extends Model {
             {
                 name: Sequelize.STRING,
                 code: Sequelize.STRING,
+                created_at: Sequelize.DATE,
+                updated_at: Sequelize.DATE
             },
             {
                 timestamp: true,
@@ -14,5 +16,9 @@ export default class User extends Model {
         )
 
         return this
+    }
+
+    static associate(models) {
+        this.hasMany(models.Client)
     }
 }
