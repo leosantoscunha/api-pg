@@ -12,7 +12,7 @@ const upload = multer(multerConfig)
 routes.post('/clients/upload', upload.single('file'), ClientController.upload)
 routes.put('/clients', upload.single('file'), ClientController.update)
 
-routes.delete('/users/:code/clients', UserController.delete)
+routes.delete('/users/:code', UserController.delete)
 
 routes.get('/users/:code/clients/', UserController.getAllClients)
 

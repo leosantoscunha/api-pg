@@ -23,6 +23,28 @@ describe('User', () => {
         const response = await request(app)
             .delete(`/users/${user.code}`)
 
-        expect(response.body).toHaveProperty('id')
+        expect(response.body).toHaveProperty('status', 'deleted')
+    })
+
+
+    it('should be able to create a user. address end client and delete user', async () => {
+        const user
+            = await factory.create('User')
+
+        const address
+            = await factory.create('Address')
+
+        const client = await factory.create('Client', {
+            address_id: address.id,
+            user_id: user.id,
+            cep: address.cep,
+        })
+
+        expect(client).toHaveProperty('id')
+
+        const response = await request(app)
+            .delete(`/users/${user.code}`)
+
+        expect(response.body).toHaveProperty('status', 'deleted')
     })
 })

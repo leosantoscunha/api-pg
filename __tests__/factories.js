@@ -16,11 +16,11 @@ factory.define('Address', Address,
     {
         street: `${faker.address.streetSuffix} ${faker.address.streetName}`,
         number: faker.random.number({ min: 1, max: 99999 }),
-        district: faker.address.city,
+        neighborhood: faker.address.city,
         city: faker.address.city,
         state: faker.address.state,
         complement: faker.address.secondaryAddress,
-        cep: faker.address.zipCode,
+        cep: '80250020',
     })
 
 

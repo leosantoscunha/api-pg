@@ -2,7 +2,7 @@ node_modules
 tmp/test/**
 tmp/uploads/**
 .env
-.env.test
 .vscode/
 yarn.lock
 yarn-error.log
+postgres-data

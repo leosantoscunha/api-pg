@@ -1,7 +1,9 @@
+import { resolve } from 'path'
 import _ from 'lodash'
 import helpers from '../../helpers'
 import parse from 'csv-parse'
 import fs from 'fs'
+import * as Yup from 'yup'
 
 import cep from 'cep-promise'
 import Queue from '../../lib/Queue'
@@ -48,7 +50,7 @@ class ClientController {
 
             const file = await FileProcess.create(fileObj)
 
-            fs.createReadStream(`/home/www/api-pg/tmp/uploads/${filename}`)
+            fs.createReadStream(`${resolve('tmp', 'uploads')}/${filename}`)
                 .pipe(parse({
                     delimiter: ';',
                     columns: true,
@@ -59,6 +61,7 @@ class ClientController {
                         return res.json({ file: err })
 
                     }
+
 
                     const list = data.map(row => {
                         const obj = _.mapKeys(row, (v, k) => k.toLowerCase())
@@ -77,6 +80,7 @@ class ClientController {
                     })
                 }
                 ))
+
             const uploadResponse = {
 
                 "user_code": user.code,
@@ -95,6 +99,17 @@ class ClientController {
     }
 
     async update(req, res, next) {
+        const schema = Yup.object().shape({
+            id: Yup.string().required(),
+            name: Yup.string(),
+            cep: Yup.string(),
+            cpf: Yup.string(),
+            number: Yup.string()
+                .when('cep', (cep, field) => cep ? field.required() : field)
+        })
+
+        if (!(await schema.isValid(req.body))) res.status(400).json({ error: 'Validation fails' })
+
         try {
 
             const client = await Client.findByPk(req.body.id)

@@ -11,9 +11,13 @@ services:
       - ./postgres-data:/var/lib/postgresql/data
     ports:
       - 5432:5432
+    networks:
+      - apipg
 
   redis:
     image: redis:alpine
+    ports:
+      - "6379:6379"
     volumes:
       - ../data/redis:/data
     entrypoint: redis-server --appendonly yes
@@ -23,7 +27,7 @@ services:
 
   app:
     build: .
-    command: npm start
+    command: yarn start
     environment:
       - DB_HOST=db
       - DB_USERNAME=postgres
@@ -35,6 +39,26 @@ services:
       - db
     ports:
       - "3333:3333"
+    links:
+      - redis
+      - db
+    volumes:
+      - .:/user/app
+    networks:
+      - apipg
+
+  queue:
+    build: .
+    command: yarn queue
+    environment:
+      - DB_HOST=db
+      - DB_USERNAME=postgres
+      - DB_PASSWORD=postgres
+      - DB_DATABASE=apipg
+      - REDIS_HOST=redis
+    depends_on:
+      - redis
+      - db
     links:
       - redis
       - db

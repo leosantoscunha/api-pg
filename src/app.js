@@ -1,11 +1,11 @@
-// import { config } from 'dotenv'
-
-// config({
-//     path: process.env.NODE_ENV === 'test' ? '.env.test' : '.env'
-// })
+import './bootstrap'
 
 import express from 'express'
+import Youch from 'youch'
 import routes from './routes'
+
+import 'express-async-errors'
+
 import './database'
 
 class AppController {
@@ -14,6 +14,7 @@ class AppController {
 
         this.middlewares()
         this.routes()
+        this.exceptionHandle()
     }
 
     middlewares() {
@@ -22,6 +23,19 @@ class AppController {
 
     routes() {
         this.server.use(routes)
+    }
+
+    exceptionHandle() {
+        this.server.use(async (err, req, res, next) => {
+            if (process.env.NODE_ENV !== 'development') {
+                return res.status(500).json({ error: 'Internal server error' })
+            }
+
+            const errors = await new Youch(err, req).toJSON()
+
+            return res.status(500).json(errors)
+
+        })
     }
 }
 
